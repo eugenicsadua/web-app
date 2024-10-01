@@ -10,7 +10,7 @@
 </head>
 <body>
 <h1 align="center">Welcome to JOMACS IT SOLUTIONS INC. </h1>
-<h1 align="center">We are a leading provider of IT solutions for companies and individuals. We specialize in web development, software engineering, DevOps engineering, data science and corporate training and workshops. Our team of experts is dedicated to delivering the highest quality services that are tailored to meet the unique needs of each of our clients. With our innovative solutions and commitment to excellence, we help our clients to achieve their goals and stay ahead of the competition. You will love our service. </h1>
+<h1 align="center">We are a leading provider of Technology solutions for companies & individuals. We specialize in web development, software engineering, DevOps engineering, data science and corporate training and workshops. Our team of experts is dedicated to delivering the highest quality services that are tailored to meet the unique needs of each of our clients. With our innovative solutions and commitment to excellence, we help our clients to achieve their goals and stay ahead of the competition. You will love our service. </h1>
 <hr>
 <br>
 	<h1><h3> Server Side IP Address </h3><br>
@@ -45,7 +45,7 @@ out.println("Server Host Name :: "+inetAddress.getHostName());
 <hr>
 <hr>
 <p align=center>JOMACS IT SOLUTIONS - Consultantancy, Training and Software Development</p>
-<p align=center><small>Copyrights 2022 by <a href="http://jomacsit.com/">JOMACS IT SOLUTIONS INC.</a> </small></p>
+<p align=center><small>Copyrights 2022 by <a href="https://jomacsit.com/">JOMACS IT SOLUTIONS INC.</a> </small></p>
 
 </body>
 </html>
