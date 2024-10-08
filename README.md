@@ -7,3 +7,4 @@
 #debugging2
 #debudding3 war directory in nexus script
 holyshit damn shit
+slack notification
