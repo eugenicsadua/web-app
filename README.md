@@ -8,4 +8,4 @@
 #debudding3 war directory in nexus script
 holyshit damn shit
 slack notification2
-Qualitygate parameter set to false3
+Qualitygate parameter set to false4
