@@ -16,6 +16,34 @@ pipeline{
                 sh 'mvn clean package'
             }
         }
+        
+        stage('code analysis'){
+            environment{
+                scannerHome = tool 'sonar'
+            }
+            steps{
+                script{
+                    withSonarQubeEnv('sonar'){
+                        sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=eugene-webapp"
+                    }
+                    
+                }
+            }
+        }
+        
+        stage('Quality Gate'){
+            steps {
+                timeout(time: 1, unit: 'MINUTES') {
+                    waitForQualityGate abortPipeline: true
+                }
+            }
+        }
+
+         stage('artifact upload'){
+            steps{
+                nexusArtifactUploader artifacts: [[artifactId: 'maven-web-application', classifier: '', file: '/var/lib/jenkins/workspace/webapp/target/web-app.war', type: 'war']], credentialsId: 'nexus-credentials', groupId: 'com.mt', nexusUrl: '3.83.165.176:8081/repository/jomacs/', nexusVersion: 'nexus3', protocol: 'http', repository: 'jomacs', version: '3.8.1 Release'
+            }
+        }
     }
     
     post {
