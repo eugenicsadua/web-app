@@ -24,7 +24,7 @@ pipeline{
             steps{
                 script{
                     withSonarQubeEnv('sonar'){
-                        sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=eugene-webapp"
+                        sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=devops-webapp"
                     }
                     
                 }
