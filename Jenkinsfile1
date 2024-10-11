@@ -1,29 +1,22 @@
 node {
-    environment {
-        REPO_URL = 'https://github.com/eugenicsadua/web-app.git'
-        ARTIFACT_PATH = '/var/lib/jenkins/workspace/devops-webapp/target/web-app.war'
-        NEXUS_URL = 'http://3.83.165.176:8081/repository/devops-webapp/'
-        SONAR_PROJECT_KEY = 'eugenics-webapp'
-    }
-    
     def mavenHome = tool name: 'maven', type: 'maven'
     def scannerHome
 
     stage('git checkout') {
-        git branch: 'main', url: REPO_URL
+        git branch: 'main', url: 'https://github.com/eugenicsadua/web-app.git'
     }
-
+    
     stage('maven goals') {
         sh "${mavenHome}/bin/mvn clean package"
     }
-
+    
     stage('code analysis') {
         scannerHome = tool 'sonar'
         withSonarQubeEnv('sonar') {
-            sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=${SONAR_PROJECT_KEY}"
+            sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=eugene-webapp"
         }
     }
-
+    
     stage('Quality Gate') {
         timeout(time: 1, unit: 'MINUTES') {
             waitForQualityGate abortPipeline: true
@@ -31,13 +24,13 @@ node {
     }
 
     stage('artifact upload') {
-        nexusArtifactUploader artifacts: [[artifactId: 'maven-web-application', classifier: '', file: ARTIFACT_PATH, type: 'war']], credentialsId: 'nexus-credentials', groupId: 'com.mt', nexusUrl: NEXUS_URL, nexusVersion: 'nexus3', protocol: 'http', repository: 'devops-webapp', version: '3.8.1 Release'
+        nexusArtifactUploader artifacts: [[artifactId: 'maven-web-application', classifier: '', file: '/var/lib/jenkins/workspace/webapp/target/web-app.war', type: 'war']], credentialsId: 'nexus-credentials', groupId: 'com.mt', nexusUrl: '3.83.165.176:8081/repository/devops-webapp/', nexusVersion: 'nexus3', protocol: 'http', repository: 'devops-webapp', version: '3.8.1 Release'
     }
-
+    
     stage('deploy to prod') {
         deploy adapters: [tomcat9(credentialsId: 'tomcat-credentials', path: '', url: 'http://3.85.220.250:8080')], contextPath: null, war: 'target/web-app.war'
     }
-
+    
     post {
         success {
             slackSend channel: 'automation-test', color: 'good', message: "Build successful: ${currentBuild.fullDisplayName}"
