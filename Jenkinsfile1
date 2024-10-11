@@ -1,5 +1,5 @@
 node {
-    def mavenHome = tool name: 'maven', type: 'Maven'
+    def mavenHome = tool name: 'maven', type: 'maven'
     def scannerHome
 
     stage('git checkout') {
