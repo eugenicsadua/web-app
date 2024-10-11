@@ -1,81 +1,45 @@
-pipeline{
-  agent any
-  tools{
-    maven "maven3.8.8"
-  }
+node {
+    def mavenHome = tool name: 'maven', type: 'Maven'
+    def scannerHome
 
-    stages{
-      stage("1. Git clone from repo"){
-        steps{
-         sh "echo start of git clone"
-         git branch: 'main', url: 'https://github.com/JOMACS-IT/web-app.git'
-         sh "echo end of git clone"
+    stage('git checkout') {
+        git branch: 'main', url: 'https://github.com/eugenicsadua/web-app.git'
+    }
+
+    stage('maven goals') {
+        sh "${mavenHome}/bin/mvn clean package"
+    }
+
+    stage('code analysis') {
+        scannerHome = tool 'sonar'
+        withSonarQubeEnv('sonar') {
+            sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=eugenics-webapp"
         }
-      }
-      
-      stage("2. Build from Maven"){
-        steps{
-          sh "echo start building from Maven"
-          sh "mvn clean package"
-          sh "echo end of build"
-        }  
-      }
-      
-      stage("3. Code Scan"){
-        steps{
-          sh "echo start of code scan"
-          sh "mvn sonar:sonar"
-          sh "echo end of code scan"
-        }  
-      }
-      
-      stage("4. Store Artifacts"){
-        steps{
-           sh "echo Deploy Artifact"
-           sh "mvn deploy"
-        }  
-      }
-      
-      stage("5. Deploying to Tomcat in UAT"){
-        steps{
-           sh "echo start deploying to server in UAT Env"
-           deploy adapters: [tomcat9(credentialsId: 'tomcat_cred', path: '', url: 'http://18.117.162.68:9090')], contextPath: null, war: 'target/*.war'
-        }  
-      }
-      
-      stage("6. Email Notification"){
-        steps{
-            sh "echo Email Notification to DevOps Team"
-            emailext body: 'The Deployment is Successful', subject: 'Deployment Success', to: 'info@jomacsit.com'
-        }  
-      }
+    }
+
+    stage('Quality Gate') {
+        timeout(time: 1, unit: 'MINUTES') {
+            waitForQualityGate abortPipeline: true
+        }
+    }
+
+    stage('artifact upload') {
+        nexusArtifactUploader artifacts: [[artifactId: 'maven-web-application', classifier: '', file: '/var/lib/jenkins/workspace/devops-webapp/target/web-app.war', type: 'war']], credentialsId: 'nexus-credentials', groupId: 'com.mt', nexusUrl: '3.83.165.176:8081/repository/jomacs/', nexusVersion: 'nexus3', protocol: 'http', repository: 'jomacs', version: '3.8.1 Release'
+    }
+
+    stage('deploy to prod') {
+        deploy adapters: [tomcat9(credentialsId: 'tomcat-credentials', path: '', url: 'http://3.85.220.250:8080')], contextPath: null, war: 'target/web-app.war'
+    }
+
+    post {
+        success {
+            slackSend channel: 'automation-test', color: 'good', message: "Build successful: ${currentBuild.fullDisplayName}"
+        }
+        failure {
+            slackSend channel: 'automation-test', color: 'danger', message: "Build failed: ${currentBuild.fullDisplayName}"
+        }
+        aborted {
+            slackSend channel: 'automation-test', color: 'warning', message: "Build aborted: ${currentBuild.fullDisplayName}"
+        }
     }
 }
-
-
-
-/*
-node{
-    def MHD = tool name: "maven3.8.4"
-    stage('code'){
-        git branch: 'development', url: 'https://github.com/team16flight/web-app.git'
-    }
-    stage('BUILD'){
-       sh "${MHD}/bin/mvn clean package"
- 
-    }
-        
-    
-    stage('deploy'){
-  sshagent(['tomcat']) {
-  sh "scp -o StrictHostKeyChecking=no target/*war ec2-user@172.31.15.31:/opt/tomcat9/webapps/"
-}
-}
-stage('email'){
-emailext body: '''Build is over
-
-JOMACS 
-437212483''', recipientProviders: [developers(), requestor()], subject: 'Build', to: 'tdapp@gmail.com'
-}
-}
- */
