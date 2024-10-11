@@ -1,12 +1,13 @@
 node {
-    def mavenHome = tool name: 'maven', type: 'maven'
-    def scannerHome
     environment {
         REPO_URL = 'https://github.com/eugenicsadua/web-app.git'
         ARTIFACT_PATH = '/var/lib/jenkins/workspace/devops-webapp/target/web-app.war'
         NEXUS_URL = 'http://3.83.165.176:8081/repository/devops-webapp/'
         SONAR_PROJECT_KEY = 'eugenics-webapp'
     }
+    
+    def mavenHome = tool name: 'maven', type: 'maven'
+    def scannerHome
 
     stage('git checkout') {
         git branch: 'main', url: REPO_URL
