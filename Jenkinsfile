@@ -52,14 +52,14 @@ pipeline{
         }
     }
     
-    post {
+    post{
         success{
             slackSend channel: 'automation-test', color: 'good', message: "Build successful: ${currentBuild.fullDisplayName}"
         }
-        failure {
+        failure{
             slackSend channel: 'automation-test', color: 'danger', message: "Build failed: ${currentBuild.fullDisplayName}"
         }
-        aborted {
+        aborted{
             slackSend channel: 'automation-test', color: 'warning', message: "Build aborted: ${currentBuild.fullDisplayName}"
         }
     }
