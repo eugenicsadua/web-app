@@ -41,7 +41,7 @@ pipeline{
 
          stage('artifact upload'){
             steps{
-                nexusArtifactUploader artifacts: [[artifactId: 'maven-web-application', classifier: '', file: '/var/lib/jenkins/workspace/devops-webappp/target/web-app.war', type: 'war']], credentialsId: 'nexus-credentials', groupId: 'com.mt', nexusUrl: '3.83.165.176:8081/repository/devops-webapp/', nexusVersion: 'nexus3', protocol: 'http', repository: 'devops-webapp', version: '3.8.1 Release'
+              nexusArtifactUploader artifacts: [[artifactId: 'maven-web-application', classifier: '', file: '/var/lib/jenkins/workspace/devops-webapp/target/web-app.war', type: 'war']], credentialsId: 'nexus-credentials', groupId: 'com.mt', nexusUrl: 'http://3.83.165.176:8081/repository/devops-webapp/', nexusVersion: 'nexus3', protocol: 'http', repository: 'devops-webapp', version: '3.8.1-Release'
             }
         }
     }
