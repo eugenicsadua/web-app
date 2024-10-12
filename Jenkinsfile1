@@ -1,4 +1,4 @@
-node {
+node { 
     def mavenHome = tool name: 'maven', type: 'maven'
     def scannerHome
 
@@ -40,15 +40,16 @@ node {
             tomcat9(credentialsId: 'tomcat-credentials', path: '', url: 'http://3.85.220.250:8080')
         ], contextPath: null, war: 'target/web-app.war'
     }
+}
 
-    // Updated Post Actions
-    script {
-        if (currentBuild.result == 'SUCCESS') {
-            slackSend channel: 'automation-test', color: 'good', message: "Build successful: ${currentBuild.fullDisplayName}"
-        } else if (currentBuild.result == 'FAILURE') {
-            slackSend channel: 'automation-test', color: 'danger', message: "Build failed: ${currentBuild.fullDisplayName}"
-        } else if (currentBuild.result == 'ABORTED') {
-            slackSend channel: 'automation-test', color: 'warning', message: "Build aborted: ${currentBuild.fullDisplayName}"
-        }
+post {
+    success {
+        slackSend channel: 'automation-test', color: 'good', message: "Build successful: ${currentBuild.fullDisplayName}"
+    }
+    failure {
+        slackSend channel: 'automation-test', color: 'danger', message: "Build failed: ${currentBuild.fullDisplayName}"
+    }
+    aborted {
+        slackSend channel: 'automation-test', color: 'warning', message: "Build aborted: ${currentBuild.fullDisplayName}"
     }
 }
